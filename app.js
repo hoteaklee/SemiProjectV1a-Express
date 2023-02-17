@@ -1,8 +1,12 @@
+//app.js
+
 // exppress 모듈과 기타 미들웨어 모듈 사용 선언
 const express = require('express');
 const path = require('path');
 const logger = require('morgan');
 const { engine } = require('express-handlebars');
+const bodyParser = require('body-parser'); // 폼 처리기
+const oracledb = require('./models/Oracle');
 
 // 라우팅 모듈 설정
 const  indexRouter = require('./routes/index')
@@ -34,10 +38,21 @@ app.set('view engine','hbs');
 // 라우팅 없이 바로 호출 가능하도록 static 폴더 설정
 app.use(express.static(path.join(__dirname, 'static')));
 
+
+
+// 미들웨어 등록 및 설정
+app.use(express.json());
+//전송된 폼 데이터에 대한 urlencoding 위한 설정
+app.use(express.urlencoded({extended: false}));
+app.use(bodyParser.json());     //전송된 폼 데이터는 json형식
+
+oracledb.initConn(); // 오라클 instant client 초기화
+
 // 라우팅 모듈 등록 - 클라이언트 요청 처리 핵심 파트
 app.use('/', indexRouter);
 app.use('/member', memberRouter);
 app.use('/board', boardRouter);
+
 
 //404,500 응답코드에  대한  라우팅 처리 정의 -
 app.use((req, res) => {
