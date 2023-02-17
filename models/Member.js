@@ -22,7 +22,7 @@ class Member{
 
         try {
             conn = await oracledb.makeConn();
-            let result = conn.execute(this.insertsql, params);
+            let result = await conn.execute(this.insertsql, params);
             await conn.commit();
             if (result.rowsAffected > 0) console.log('회원정보 저장 성공!')
         } catch (ex) {console.log(ex);}

@@ -22,7 +22,7 @@ router.get('/myinfo',(req,res)=>{
 router.post('/join',(req,res,next)=>{
     let {userid, passwd, name, email} = req.body;
     // console.log(userid, passwd, name, email);
-   console.log(req.body.userid, req.body.passwd, req.body.name, req.body.email);
+   //console.log(req.body.userid, req.body.passwd, req.body.name, req.body.email);
 
     new Member(userid, passwd, name, email).insert();
 
