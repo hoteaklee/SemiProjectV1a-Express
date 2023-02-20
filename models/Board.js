@@ -4,13 +4,14 @@ const oracledb = require('../models/Oracle');
 let boardsql = {
     insert: ' insert into board (bno,  title, userid, contents) ' +
         ' values (bno.nextval, :1, :2, :3) ',
-    select: ' select bno, title, userid, views, regdate from board order by bno desc',
+    select: ' select bno, title, userid, views,' +
+        ` to_char(regdate, 'YYYY-MM-DD') regdate from board order by bno desc `,
     selectOne:' delete from board where bno=:1 ',
     update: 'update board set title = :1 , contents=:2 where bno = :3 ',
     delete:' delete from board where bno=:1 '
 }
 
-class board {
+class Board {
     constructor(bno, title, userid, regdate, contents, views) {
         this.bno = bno;
         this.title = title;
@@ -33,16 +34,28 @@ class board {
         finally { await oracledb.closeConn(); }  //종료
         return insertcnt;
     }
-    async select () {
+
+
+    async select () {   // 게시판 목록출 력
         let conn = null;
         let params = [];
-        let insertcnt = 0;
+        let bds = []; // 결과 적용
 
         try { conn = await oracledb.makeConn();
+            let result = await conn.execute(boardsql.select, params, oracledb.options);
+            let rs = result.resultSet;
+
+            let row = null;
+            while ((row = await rs.getRow())){
+                let bd = new Board(row.BNO, row.TITLE, row.USERID, row.REGDATE, null,row.VIEWS);
+                bds.push(bd);
+            }
         } catch (e){ console.log(e); }
         finally { await oracledb.closeConn(); }
-        return insertcnt;
+        return bds;
     }
+
+
     async selectOne () {
         let conn = null;
         let params = [];
@@ -75,4 +88,4 @@ class board {
     }
 }
 
-module.exports = board;
+module.exports = Board;

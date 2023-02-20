@@ -4,14 +4,19 @@ const path = require('path');
 const router = express.Router();
 const Board = require('../models/Board')
 
-router.get('/list',(req,res)=>{
-    //res.sendFile(path.join(__dirname,'../public', 'list.html'));
+router.get('/list',async (req, res) => {
+    let bds = new Board().select().then((bds) => bds);
+
+    //console.log(await bds);
+
     // handlebars 뷰 엔진으로 응답처리
-    res.render('board/list', {title: '게시판'});
+    res.render('board/list', {title: '게시판 목록', bds: await bds});
 });
+
+
 router.get('/write',(req,res)=>{
     //res.sendFile(path.join(__dirname,'../public', 'write.html'));
-    res.render('board/write', {title: '새글쓰기'});
+    res.render('board/write', {title: '게시판 새글쓰기'});
 });
 
 router.post('/write',async (req,res)=>{
@@ -28,7 +33,7 @@ router.post('/write',async (req,res)=>{
 
 router.get('/view',(req,res)=>{
     //res.sendFile(path.join(__dirname,'../public', 'view.html'));
-    res.render('board/view', {title: '게시판본문보기'});
+    res.render('board/view', {title: '게시판 본문보기'});
 });
 
 
