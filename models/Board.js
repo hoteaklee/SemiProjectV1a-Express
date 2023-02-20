@@ -6,7 +6,9 @@ let boardsql = {
         ' values (bno.nextval, :1, :2, :3) ',
     select: ' select bno, title, userid, views,' +
         ` to_char(regdate, 'YYYY-MM-DD') regdate from board order by bno desc `,
-    selectOne:' delete from board where bno=:1 ',
+
+    selectOne:` select board.*, to_char(regdate, 'YYYY-MM-DD HH24:MI:SS') regdate2 from board  where bno=:1 `,
+
     update: 'update board set title = :1 , contents=:2 where bno = :3 ',
     delete:' delete from board where bno=:1 '
 }
@@ -56,16 +58,26 @@ class Board {
     }
 
 
-    async selectOne () {
+    async selectOne (bno) {     //본문 조회
         let conn = null;
-        let params = [];
-        let insertcnt = 0;
+        let params = [bno];
+        let bds = 0;
 
         try { conn = await oracledb.makeConn();
+            let result = await conn.execute(boardsql.selectOne, params, oracledb.options);
+            let rs =  result.resultSet;
+
+            let row = null;
+            while ((row = await rs.getRow())){
+                let bd = new Board(row.BNO, row.TITLE, row.USERID, row.REGDATE2, row.CONTENTS, row.VIEWS);
+                bds.push(bd);
+            }
         } catch (e){ console.log(e); }
         finally { await oracledb.closeConn(); }
-        return insertcnt;
+        return bds;
     }
+
+
     async update () {
         let conn = null;
         let params = [];
