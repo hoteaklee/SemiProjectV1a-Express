@@ -2,6 +2,10 @@
     <style></style>
 {{/section}}
 
+{{#section 'script'}}
+    <script src="/js/login.js"></script>
+{{/section}}
+
 <main>
     <h2>로그인</h2>
     <form name="login">
@@ -11,7 +15,7 @@
             <div><label for="passwd">
                 비밀번호</label> <input type="password" name="passwd" id="passwd"></div>
             <div><label></label>
-                <button type="button">로그인</button></div>
+                <button type="button" id="loginbtn">로그인</button></div>
         </div>
     </form>
 
