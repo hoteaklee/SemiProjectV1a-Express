@@ -39,9 +39,15 @@ router.get('/logout',(req,res)=>{
 });
 
 router.get('/myinfo',(req,res)=>{
-    //res.sendFile(path.join(__dirname,'../public', 'myinfo.html'));
-    res.render('myinfo', {title: '회원정보'});
+    if (req.session.userid){    //세션변수 userid가 존재한다면
+        res.render('myinfo', {title: '회원정보'});
+    } else {
+        res.redirect(303, '/member/login');
+    }
+
+
 });
+
 router.post('/join',(req,res,next)=>{
     let {userid, passwd, name, email} = req.body;
     // console.log(userid, passwd, name, email);

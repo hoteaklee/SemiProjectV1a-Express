@@ -1,11 +1,14 @@
+
 <header><h1>JSP 프로젝트 v1</h1></header>
 <nav>
     <ul>
         <li><a href="/">HOME</a></li>
-        <li><a href="/member/join">회원가입</a></li>
+
         {{#if session.userid}}
+            <li><a href="#">회원가입</a></li>
         <li><a href="/member/logout">로그아웃</a></li>
         {{else}}
+            <li><a href="/member/join">회원가입</a></li>
         <li><a href="/member/login">로그인</a></li>
         {{/if}}
         <li><a href="/board/list">게시판</a></li>
