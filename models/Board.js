@@ -9,6 +9,8 @@ let boardsql = {
 
     selectOne:` select board.*, to_char(regdate, 'YYYY-MM-DD HH24:MI:SS') regdate2 from board where bno=:1 `,
 
+    selectCount: 'select count(bno) cnt from board',
+
     viewOne: 'update board set views = views + 1 where bno = :1',
 
     update: 'update board set title = :1 , contents= :2, regdate = current_timestamp where bno = :3 ',
@@ -47,12 +49,17 @@ class Board {
         let bds = []; // 결과 적용
 
         try { conn = await oracledb.makeConn();
-            let result = await conn.execute(boardsql.select, params, oracledb.options);
+            let result = await conn.execute(boardsql.selectCount, params, oracledb.options);
             let rs = result.resultSet;
+            let idx = -1 , row = null;
+            if ((row = await rs.getRow())) idx = row.CNT; // 총 게시글수
 
-            let row = null;
+             result = await conn.execute(boardsql.select, params, oracledb.options);
+             rs = result.resultSet;
+             row = null;
             while ((row = await rs.getRow())){
                 let bd = new Board(row.BNO, row.TITLE, row.USERID, row.REGDATE, null,row.VIEWS);
+                bd.idx = idx--; // 글번호 칼럼
                 bds.push(bd);
             }
         } catch (e){ console.log(e); }
