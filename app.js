@@ -21,17 +21,11 @@ const port = process.env.PORT || 3000; // 노드 제이에스에 포트가 설�
 //로그 설정
 app.use(logger('dev'));
 
-//view 템플릿 엔진 설정
+//템플릿 엔진 설정
 app.engine('hbs', engine({
     extname:'.hbs', defaultLayout: 'layout',
-    helpers: {
-        section: function(name, options) {
-            if(!this._sections) this._sections = {}
-            this._sections[name] = options.fn(this)
-            return null
-        },
-    },
-}))
+    helpers: require ('./helpers/handlebars-helper'),
+}));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine','hbs');
 
