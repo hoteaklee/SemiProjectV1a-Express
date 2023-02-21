@@ -11,8 +11,8 @@ let boardsql = {
 
     viewOne: 'update board set views = views + 1 where bno = :1',
 
-    update: 'update board set title = :1 , contents=:2 where bno = :3 ',
-
+    update: 'update board set title = :1 , contents= :2, regdate = current_timestamp where bno = :3 ',
+    /*regdate = current_timestamp where  수정한 시간으로 바꾸기*/
     delete:' delete from board where bno=:1 '
 }
 
@@ -89,14 +89,16 @@ class Board {
 
     async update () {
         let conn = null;
-        let params = [];
-        let insertcnt = 0;
+        let params = [this.title, this.contents, this.bno];
+        let updatecnt = 0;
 
         try { conn = await oracledb.makeConn();
-
+            let result = await conn.execute(boardsql.update, params);
+            await conn.commit();
+            if (result.rowsAffected > 0 ) updatecnt = result.rowsAffected;
         } catch (e){ console.log(e); }
         finally { await oracledb.closeConn(); }
-        return insertcnt;
+        return updatecnt;
     }
 
 

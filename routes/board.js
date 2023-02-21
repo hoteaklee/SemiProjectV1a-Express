@@ -55,8 +55,32 @@ router.get('/delete',async (req,res)=>{
 
    res.redirect(303, '/board/list');
 });
-router.get('/update',(req,res)=>{
-    res.sendFile(path.join(__dirname,'../public', 'update.html'));
+router.get('/update',async (req,res)=>{
+    let {bno, uid} = req.query;
+    let suid = req.session.userid;
+
+    if (uid && suid && (uid == suid)) {
+        let bds = new Board().selectOne(bno).then(bds => bds);
+        res.render('board/update', {title:'게시판 수정하기', bds: await bds});
+    } else {
+        res.redirect(303,'/board/list');
+    }
+
+});
+
+router.post('/update',(req,res)=>{
+    let { title, uid, contents } = req.body;
+    let bno = req.query.bno;
+    let suid = req.session.userid;
+
+    if (uid && suid && (uid == suid)) {
+        let bds = new Board(bno, title, uid, 0, contents, 0)
+            .update().then(cnt => cnt);
+        res.redirect(303,`/board/view?bno=${bno}`);
+    } else {
+        res.redirect(303,'/board/list');
+    }
+
 });
 
 
