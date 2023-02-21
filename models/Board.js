@@ -12,6 +12,7 @@ let boardsql = {
     viewOne: 'update board set views = views + 1 where bno = :1',
 
     update: 'update board set title = :1 , contents=:2 where bno = :3 ',
+
     delete:' delete from board where bno=:1 '
 }
 
@@ -92,19 +93,26 @@ class Board {
         let insertcnt = 0;
 
         try { conn = await oracledb.makeConn();
+
         } catch (e){ console.log(e); }
         finally { await oracledb.closeConn(); }
         return insertcnt;
     }
-    async delete () {
+
+
+    async delete (bno) {
         let conn = null;
-        let params = [];
-        let insertcnt = 0;
+        let params = [bno];
+        let deletecnt = 0;
 
         try { conn = await oracledb.makeConn();
+            let result = await conn.execute(boardsql.delete, params); //실행
+            await conn.commit(); //시스템 반영
+            if (result.rowsAffected > 0) deletecnt = result.rowsAffected;  // 몇개행이 지워졌는지 확인
+
         } catch (e){ console.log(e); }
         finally { await oracledb.closeConn(); }
-        return insertcnt;
+        return deletecnt;
     }
 }
 

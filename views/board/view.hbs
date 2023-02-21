@@ -11,7 +11,7 @@
 {{/section}}
 
 {{#section 'script'}}
-    <script></script>
+    <script src="/js/view.js"></script>
 {{/section}}
 
 < <main>
@@ -29,6 +29,9 @@
 
         <div> <label class="drgup">본 문</label>
             <span id="contents">{{contents}}</span></div>
+
+            <input type="hidden" id="bno" value="{{bno}}">
+            <input type="hidden" id="uid" value="{{userid}}">
             {{/bds}}
         <div><label></label>
             {{#if session.userid}}

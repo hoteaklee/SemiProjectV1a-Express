@@ -45,8 +45,15 @@ router.get('/view',async (req,res)=>{
 
 
 
-router.get('/delete',(req,res)=>{
-    res.sendFile(path.join(__dirname,'../public', 'delete.html'));
+router.get('/delete',async (req,res)=>{
+    let {bno, uid} = req.query;
+    let suid = req.session.userid;
+
+    if (suid && uid &&(suid== uid)) {       // 글 작성자와 삭제자가 일치하는 경우
+        new Board().delete(bno).then(cnt => cnt);
+    }
+
+   res.redirect(303, '/board/list');
 });
 router.get('/update',(req,res)=>{
     res.sendFile(path.join(__dirname,'../public', 'update.html'));
