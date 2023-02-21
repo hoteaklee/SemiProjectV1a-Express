@@ -7,6 +7,8 @@ let membersql = {
     ' values(mno.nextval, :1, :2, :3, :4)',
 
     loginsql : ' select count(userid) cnt from member where userid = :1 and passwd = :2 ',
+
+    selectOne: ` select member.*, to_char(regdate, 'YYYY-MM_DD HH24:MI:SS') regdate2 from member where userid = :1 `
 }
 
 class Member{
@@ -35,7 +37,7 @@ class Member{
         finally { await oracledb.closeConn(conn);}
     }
 
-    async login (uid, passwd) {     //
+    async login (uid, passwd) {     // 로그인 처리
         let conn = null;
         let params = [uid, passwd];
         let isLogin = 0;
@@ -55,7 +57,27 @@ class Member{
         return isLogin;
     }
 
+    async selectOne (uid) {     // 아이디로 겸색된 회원의 모든 정보 조회
+        let conn = null;
+        let params = [uid];
+        let members = [];
 
-}
+        try { conn = await oracledb.makeConn();
+            let result = await conn.execute(membersql.selectOne, params, oracledb.options);
+            let rs =  result.resultSet;
+
+            let row = null;
+            while ((row = await rs.getRow())){
+                let m = new Member(row.USERID, '',row.NAME, row.EMAIL);
+                m.regdate = row.REGDATE2
+                members.push(m);
+            }
+
+
+        } catch (e){ console.log(e); }
+        finally { await oracledb.closeConn(); }
+        return members;
+    }
+};
 
 module.exports = Member;
