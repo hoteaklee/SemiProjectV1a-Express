@@ -21,7 +21,7 @@ router.get('/', async (req,res)=>{
 
     res.render('zipcode', {title:'시군구동 찾기',
         sidos: await sidos, guguns: await guguns, dongs: await dongs,
-        sido: sido, gugun: gugun });
+        sido: sido, gugun: gugun});
 
 });
 

@@ -7,18 +7,30 @@
         let url = '?sido=' + sido.value;
         location.href = url;
     };
-    const getDong = () => {};
+    const getDong = () => {
+        let url = '?sido=' + sido.value + '&gugun=' + gugun.value;
+        location.href = url;
+    };
+    const showAddr = ()=>{
+      let url = '?sido='+ sido.value + '&gugun='+gugun.value + '&dong='+dong.value;
+      location.href = url;
+    };
 
     let sido = document.querySelector('#sido');
     let gugun = document.querySelector('#gugun');
     let dong = document.querySelector('#dong');
 
     sido.addEventListener('change', getGugun); //클릭 이벤트 생성
+    gugun.addEventListener('change', getDong);
+    dong.addEventListener('change', showAddr);
     </script>
     <script>
         // 선택한 시도를 다시 나오기 위해서
         {{#if sido}}
         document.querySelector('#sido').value='{{sido}}';
+        {{/if}}
+       {{#if gugun}}
+          document.querySelector('#gugun').value='{{gugun}}';
         {{/if}}
     </script>
 {{/section}}
