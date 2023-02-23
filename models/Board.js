@@ -1,11 +1,16 @@
 //Board.js
 const oracledb = require('../models/Oracle');
+const ppg = 15;
 
 let boardsql = {
     insert: ' insert into board (bno,  title, userid, contents) ' +
         ' values (bno.nextval, :1, :2, :3) ',
     select: ' select bno, title, userid, views,' +
         ` to_char(regdate, 'YYYY-MM-DD') regdate from board order by bno desc `,
+
+    paging1:  `select * from ( select bno, title, userid, views,to_char(regdate, 'YYYY-MM-DD') regdate,`
+             + `row_number() over (order by bno desc) rowno from board`,
+     paging2:  ` ) bd2 where rowno >= :1 and rowno < :2` ,
 
     selectOne:` select board.*, to_char(regdate, 'YYYY-MM-DD HH24:MI:SS') regdate2 from board where bno=:1 `,
 
@@ -43,20 +48,18 @@ class Board {
     }
 
 
-    async select () {   // 게시판 목록출 력
+    async select (stnum) {   // 게시판 목록출 력
         let conn = null;
-        let params = [];
+        let params = [stnum, stnum +ppg];
         let bds = []; // 결과 적용
 
         try { conn = await oracledb.makeConn();
-            let result = await conn.execute(boardsql.selectCount, params, oracledb.options);
-            let rs = result.resultSet;
-            let idx = -1 , row = null;
-            if ((row = await rs.getRow())) idx = row.CNT; // 총 게시글수
+           let idx = await this.selectCount(); // 총 게시글수 계산
+            idx = idx - stnum + 1 ;
 
-             result = await conn.execute(boardsql.select, params, oracledb.options);
-             rs = result.resultSet;
-             row = null;
+            let result = await conn.execute(boardsql.paging1+boardsql.paging2, params, oracledb.options);
+            let rs = result.resultSet;
+            let row = null;
             while ((row = await rs.getRow())){
                 let bd = new Board(row.BNO, row.TITLE, row.USERID, row.REGDATE, null,row.VIEWS);
                 bd.idx = idx--; // 글번호 칼럼
@@ -65,6 +68,22 @@ class Board {
         } catch (e){ console.log(e); }
         finally { await oracledb.closeConn(); }
         return bds;
+    }
+
+    async selectCount () {   // 총 게시뭏 수 계산
+        let conn = null;
+        let params = [];
+        let cnt = -1; // 결과  저장용
+
+        try {
+            conn = await oracledb.makeConn();
+            let result = await conn.execute(boardsql.selectCount, [], oracledb.options);
+            let rs = result.resultSet;
+            let  row = null;
+            if ((row = await rs.getRow())) cnt = row.CNT;
+        } catch (e){ console.log(e); }
+        finally { await oracledb.closeConn(); }
+        return await cnt;
     }
 
 
