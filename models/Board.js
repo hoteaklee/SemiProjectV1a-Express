@@ -52,10 +52,11 @@ class Board {
         let conn = null;
         let params = [stnum, stnum +ppg];
         let bds = []; // 결과 적용
+        let allcnt = -1;
 
         try { conn = await oracledb.makeConn();
-           let idx = await this.selectCount(); // 총 게시글수 계산
-            idx = idx - stnum + 1 ;
+            allcnt = await this.selectCount(conn); // 총 게시글수 계산
+            let idx = allcnt - stnum + 1 ;
 
             let result = await conn.execute(boardsql.paging1+boardsql.paging2, params, oracledb.options);
             let rs = result.resultSet;
@@ -67,22 +68,22 @@ class Board {
             }
         } catch (e){ console.log(e); }
         finally { await oracledb.closeConn(); }
-        return bds;
+        let  result = {'bds':bds, 'allcnt':allcnt}
+
+        return result;
     }
 
-    async selectCount () {   // 총 게시뭏 수 계산
-        let conn = null;
+    async selectCount (conn) {   // 총 게시뭏 수 계산
         let params = [];
         let cnt = -1; // 결과  저장용
 
+
         try {
-            conn = await oracledb.makeConn();
-            let result = await conn.execute(boardsql.selectCount, [], oracledb.options);
+            let result = await conn.execute(boardsql.selectCount, params, oracledb.options);
             let rs = result.resultSet;
             let  row = null;
             if ((row = await rs.getRow())) cnt = row.CNT;
         } catch (e){ console.log(e); }
-        finally { await oracledb.closeConn(); }
         return await cnt;
     }
 
