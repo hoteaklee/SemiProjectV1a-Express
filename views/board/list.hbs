@@ -16,7 +16,7 @@
         }
 
         .pagenation { list-style: none; padding: 0; margin: 0 auto;
-            /*border: 1px solid red;*/ width: 500px; }
+            /*border: 1px solid red;*/ width: 500px;  text-align: center;}
         .pagenation li { display: inline-block; padding: 6px; }
         .cpage { font: bold 32px '맑은 고딕'; color: red;  }
         .prev {color: #cccccc; }
@@ -72,7 +72,13 @@
         {{/bds}}
     </table>
     <ul class="pagenation">
+        {{#if pgn.isprev}}
         <li><a href="?cpg={{pgn.prev}}">이전</a></li>
+        {{/if}}
+
+        {{#if pgn.isprev10}}
+            <li><a href="?cpg={{pgn.prev10}}">이전 -10 </a></li>
+        {{/if}}
 
 {{#stpgns}}
     {{#if iscpg}}
@@ -81,6 +87,11 @@
         <li><a href="?cpg={{num}}">{{num}}</a></li>
    {{/if}}
 {{/stpgns}}
+        {{#if pgn.isnext10}}
+        <li><a href="?cpg={{pgn.next10}}">다음 + 10</a></li>
+        {{/if}}
 
+        {{#if pgn.isnext}}
         <li><a href="?cpg={{pgn.next}}">다음</a></li></ul>
+            {{/if}}
 </main>
