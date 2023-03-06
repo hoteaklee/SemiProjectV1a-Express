@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/join',(req,res)=>{
     //res.sendFile(path.join(__dirname,'../public', 'join.html'));
-    res.render('join', {title: '회원가입'});
+    res.render('join', {title: '회원가입',layout:false });
 });
 
 

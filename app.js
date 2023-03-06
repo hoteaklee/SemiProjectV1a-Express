@@ -19,7 +19,7 @@ const zipcode2Router = require('./routes/zipcode2');
 // express 객체 생성 및 포트 변수 선언
 const app = express();
 const port = process.env.PORT || 3000; // 노드 제이에스에 포트가 설정되어 있는면 쓰고 아니면 3000번으로 한단 뜻
-
+const hbs = require('hbs');
 //로그 설정
 app.use(logger('dev'));
 
